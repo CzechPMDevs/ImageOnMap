@@ -24,7 +24,6 @@ namespace czechpmdevs\imageonmap\command;
 
 use czechpmdevs\imageonmap\ImageOnMap;
 use czechpmdevs\imageonmap\item\FilledMap;
-use czechpmdevs\imageonmap\utils\ImageLoader;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -133,7 +132,7 @@ class ImageCommand extends Command implements PluginOwned {
 					$xOffset = $yOffset = 0;
 				}
 
-				$sender->getInventory()->addItem(FilledMap::get()->setImage(ImageLoader::loadImage($file, $cropSize, $xOffset, $yOffset)));
+				$sender->getInventory()->addItem(FilledMap::get()->setMapId(ImageOnMap::getInstance()->getImageFromFile($file, $cropSize, $xOffset, $yOffset)));
 				$sender->sendMessage("§aMap successfully created from the image.");
 				break;
 			endswitch;

@@ -29,6 +29,8 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
 class Image {
 
+	private static Image $blankImage;
+
 	private int $dimension = DimensionIds::OVERWORLD;
 	private bool $isLocked = false;
 
@@ -81,5 +83,22 @@ class Image {
 		$nbt->setByteArray("colors", ColorSerializer::writeColors($this->colors));
 
 		return $nbt;
+	}
+
+	public static function blank(): Image {
+		if(isset(self::$blankImage)) {
+			return self::$blankImage;
+		}
+
+		$image = new Image();
+
+		$image->colors = [];
+		for($x = 0; $x < 128; ++$x) {
+			for($y = 0; $y < 128; ++$y) {
+				$image->colors[$x][$y] = new Color(0, 0, 0, 0);
+			}
+		}
+
+		return self::$blankImage = $image;
 	}
 }

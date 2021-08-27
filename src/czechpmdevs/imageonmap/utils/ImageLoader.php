@@ -29,7 +29,6 @@ use function imagecolorat;
 use function imagecreatefromjpeg;
 use function imagecreatefrompng;
 use function imagecrop;
-use function imagepng;
 use function imagescale;
 use function pack;
 use function pathinfo;
@@ -64,8 +63,6 @@ class ImageLoader {
 			throw new InvalidStateException("Could not crop the image");
 		}
 
-		imagepng($image, "out.png");
-
 		$colors = [];
 		for($y = 0; $y < 128; ++$y) {
 			for($x = 0; $x < 128; ++$x) {
@@ -78,7 +75,6 @@ class ImageLoader {
 				$color |= (0xff << 24);
 
 				$colors[] = $color;
-
 			}
 		}
 

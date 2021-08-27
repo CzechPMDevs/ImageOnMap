@@ -22,8 +22,6 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap\item;
 
-use czechpmdevs\imageonmap\ImageOnMap;
-use czechpmdevs\imageonmap\utils\Image;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -34,8 +32,8 @@ class FilledMap extends Item {
 
 	private int $uuid;
 
-	public function setImage(Image $image): self {
-		$this->uuid = ImageOnMap::getInstance()->registerImage($image);
+	public function setMapId(int $uuid): self {
+		$this->uuid = $uuid;
 		return $this;
 	}
 

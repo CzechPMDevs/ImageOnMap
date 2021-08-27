@@ -23,24 +23,27 @@ declare(strict_types=1);
 namespace czechpmdevs\imageonmap;
 
 use czechpmdevs\imageonmap\utils\Image;
+use czechpmdevs\imageonmap\utils\ImageLoader;
 use InvalidStateException;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\TreeRoot;
 use function array_key_exists;
 use function basename;
+use function crc32;
 use function file_get_contents;
 use function file_put_contents;
 use function glob;
-use function mt_rand;
+use function hash_file;
 use function substr;
 
 trait DataProviderTrait {
 
-	private int $lastMapId = 0;
-
 	/** @var array<int, Image> */
 	private array $cachedMaps = [];
 
+	/**
+	 * @internal
+	 */
 	public function loadCachedMaps(string $path): void {
 		$files = glob($path . "/map_*.dat");
 		if(!$files) {
@@ -58,6 +61,9 @@ trait DataProviderTrait {
 		}
 	}
 
+	/**
+	 * @internal
+	 */
 	public function saveCachedMaps(string $path): void {
 		$serializer = new BigEndianNbtSerializer();
 		foreach ($this->cachedMaps as $id => $map) {
@@ -67,16 +73,19 @@ trait DataProviderTrait {
 		}
 	}
 
-	public function getCachedMap(int $id): Image {
-		return $this->cachedMaps[$id];
+	public function getImageFromFile(string $file, int $chunkCount, int $xOffset, int $yOffset): int {
+		$id = crc32(hash_file("md5", $file) . "$chunkCount:$xOffset:$yOffset");
+		if(!array_key_exists($id, $this->cachedMaps)) {
+			$this->cachedMaps[$id] = ImageLoader::loadImage($file, $chunkCount, $xOffset, $yOffset);
+		}
+
+		return $id;
 	}
 
-	public function registerImage(Image $image): int {
-		do {
-			$id = mt_rand();
-		} while(array_key_exists($id, $this->cachedMaps));
-
-		$this->cachedMaps[$id] = $image;
-		return $id;
+	/**
+	 * @internal
+	 */
+	public function getCachedMap(int $id): Image {
+		return $this->cachedMaps[$id];
 	}
 }

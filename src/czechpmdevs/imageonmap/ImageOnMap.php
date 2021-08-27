@@ -24,6 +24,7 @@ namespace czechpmdevs\imageonmap;
 
 use czechpmdevs\imageonmap\command\ImageCommand;
 use czechpmdevs\imageonmap\item\FilledMap;
+use czechpmdevs\imageonmap\utils\Image;
 use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemFactory;
@@ -60,9 +61,6 @@ class ImageOnMap extends PluginBase implements Listener {
 		$this->saveCachedMaps($this->getDataFolder() . "data");
 	}
 
-	/**
-	 * @throws UnknownMapIdException
-	 */
 	public function onDataPacketReceive(DataPacketReceiveEvent $event): void {
 		$packet = $event->getPacket();
 		if(!$packet instanceof MapInfoRequestPacket) {
@@ -70,8 +68,9 @@ class ImageOnMap extends PluginBase implements Listener {
 		}
 
 		if(!array_key_exists($packet->mapId, $this->cachedMaps)) {
-			$event->getOrigin()->getPlayer()?->getInventory()?->clearAll();
-			throw new UnknownMapIdException("Id $packet->mapId not found"); // TODO - Create blank map in that case
+			$event->getOrigin()->sendDataPacket(Image::blank()->getPacket($packet->mapId));
+			$this->getLogger()->debug("Unknown map id $packet->mapId received from {$event->getOrigin()->getDisplayName()}");
+			return;
 		}
 
 		$event->getOrigin()->sendDataPacket($this->getCachedMap($packet->mapId)->getPacket($packet->mapId));
