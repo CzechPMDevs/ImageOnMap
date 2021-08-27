@@ -1,0 +1,6 @@
+vendor
+out
+.idea
+*.jpg
+*.png
+test.php
