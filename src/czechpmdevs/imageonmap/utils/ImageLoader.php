@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap\utils;
 
+use czechpmdevs\imageonmap\image\Image;
 use InvalidStateException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;

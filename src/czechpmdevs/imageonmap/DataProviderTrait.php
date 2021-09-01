@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap;
 
-use czechpmdevs\imageonmap\utils\Image;
+use czechpmdevs\imageonmap\image\Image;
 use czechpmdevs\imageonmap\utils\ImageLoader;
 use InvalidStateException;
 use pocketmine\nbt\BigEndianNbtSerializer;
