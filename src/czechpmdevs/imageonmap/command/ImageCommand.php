@@ -23,7 +23,9 @@ declare(strict_types=1);
 namespace czechpmdevs\imageonmap\command;
 
 use czechpmdevs\imageonmap\ImageOnMap;
+use czechpmdevs\imageonmap\ImagePlaceSession;
 use czechpmdevs\imageonmap\item\FilledMap;
+use czechpmdevs\imageonmap\utils\ImageLoader;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -34,11 +36,9 @@ use function array_push;
 use function array_shift;
 use function basename;
 use function count;
-use function file_exists;
 use function glob;
 use function implode;
 use function is_numeric;
-use function str_contains;
 use function strtolower;
 
 class ImageCommand extends Command implements PluginOwned {
@@ -49,16 +49,16 @@ class ImageCommand extends Command implements PluginOwned {
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) {
-		if(!$this->testPermission($sender)) {
+		if (!$this->testPermission($sender)) {
 			return;
 		}
 
-		if(!$sender instanceof Player) {
+		if (!$sender instanceof Player) {
 			$sender->sendMessage("§cThis command can be used only in game.");
 			return;
 		}
 
-		if(!isset($args[0])) {
+		if (!isset($args[0])) {
 			$sender->sendMessage("§cUsage: §7/img help");
 			return;
 		}
@@ -68,18 +68,19 @@ class ImageCommand extends Command implements PluginOwned {
 				$sender->sendMessage("§2--- §fShowing ImageOnMap Commands page 1 of 1 §2---\n" .
 					"§2/img help §fShows help\n" .
 					"§2/img list §fShows available images\n" .
-					"§2/img obtain <image> [<scale> <x> <y>] §fObtains an image");
+					"§2/img obtain <image> [<scale> <x> <y>] §fObtains an image\n" .
+					"§2/img place <image> §fPlaces an image");
 				break;
 			case "list":
 				$files = [];
 
 				$pngFiles = glob($this->getOwningPlugin()->getDataFolder() . "images/*.png");
-				if($pngFiles) {
+				if ($pngFiles) {
 					array_push($files, ...array_map(fn(string $file) => basename($file, ".png"), $pngFiles));
 				}
 
 				$jpgFiles = glob($this->getOwningPlugin()->getDataFolder() . "images/*.jpg");
-				if($jpgFiles) {
+				if ($jpgFiles) {
 					array_push($files, ...array_map(fn(string $file) => basename($file, ".jpg"), $jpgFiles));
 				}
 
@@ -88,42 +89,36 @@ class ImageCommand extends Command implements PluginOwned {
 				break;
 			case "obtain":
 			case "o":
-				if(count($args) == 0) {
+				if (count($args) == 0) {
 					$sender->sendMessage("§cUsage: §7/img o <image> [<cropSize> <x> <y>]");
 					break;
 				}
 
-				$imageName = (string) array_shift($args);
-				if(!str_contains($imageName, ".png") && !str_contains($imageName, ".jpg")) {
-					if(file_exists($this->getOwningPlugin()->getDataFolder() . "images/$imageName.png")) {
-						$imageName .= ".png";
-					} elseif(file_exists($this->getOwningPlugin()->getDataFolder() . "images/$imageName.jpg")) {
-						$imageName .= ".jpg";
-					} else {
-						$sender->sendMessage("§cImage $imageName was not found");
-						break;
-					}
+				$imageName = ImageLoader::findFile((string)array_shift($args));
+				if ($imageName === null) {
+					$sender->sendMessage("§cImage $imageName was not found");
+					break;
 				}
 
 				$file = $this->getOwningPlugin()->getDataFolder() . "images/$imageName";
-				if(count($args) >= 3) {
+				if (count($args) >= 3) {
 					foreach ($args as $argument) {
-						if(!is_numeric($argument)) {
+						if (!is_numeric($argument)) {
 							$sender->sendMessage("§cOnly numbers could be used to specify crop information");
 							break 2;
 						}
 					}
 
-					$cropSize = (int) array_shift($args);
-					$xOffset = (int) array_shift($args);
-					$yOffset = (int) array_shift($args);
+					$cropSize = (int)array_shift($args);
+					$xOffset = (int)array_shift($args);
+					$yOffset = (int)array_shift($args);
 
-					if($cropSize < 1) {
+					if ($cropSize < 1) {
 						$sender->sendMessage("§cCrop size could not be lower than 0");
 						break;
 					}
 
-					if($xOffset >= $cropSize || $yOffset >= $cropSize) {
+					if ($xOffset >= $cropSize || $yOffset >= $cropSize) {
 						$sender->sendMessage("§cIt is not possible to create chunk of the image with crop size $cropSize at the position of $xOffset:$yOffset");
 						break;
 					}
@@ -135,7 +130,21 @@ class ImageCommand extends Command implements PluginOwned {
 				$sender->getInventory()->addItem(FilledMap::get()->setMapId(ImageOnMap::getInstance()->getImageFromFile($file, $cropSize, $xOffset, $yOffset)));
 				$sender->sendMessage("§aMap successfully created from the image.");
 				break;
-			endswitch;
+			case "place":
+			case "p":
+				$sender->sendMessage("§cUsage: §7/img p <image>");
+
+				$imageName = ImageLoader::findFile((string)array_shift($args));
+				if ($imageName === null) {
+					$sender->sendMessage("§cImage $imageName was not found");
+					break;
+				}
+
+				$file = $this->getOwningPlugin()->getDataFolder() . "images/$imageName";
+
+				(new ImagePlaceSession($sender, $file, ImageOnMap::getInstance()))->run();
+				break;
+		endswitch;
 	}
 
 	public function getOwningPlugin(): Plugin {

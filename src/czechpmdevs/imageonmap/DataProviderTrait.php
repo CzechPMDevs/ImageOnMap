@@ -46,18 +46,18 @@ trait DataProviderTrait {
 	 */
 	public function loadCachedMaps(string $path): void {
 		$files = glob($path . "/map_*.dat");
-		if(!$files) {
+		if (!$files) {
 			return;
 		}
 
 		$serializer = new BigEndianNbtSerializer();
 		foreach ($files as $file) {
 			$content = file_get_contents($file);
-			if(!$content) {
+			if (!$content) {
 				throw new InvalidStateException("Could not access file $file"); // TODO - Better name
 			}
 
-			$this->cachedMaps[(int) substr(basename($file, ".dat"), 4)] = Image::load($serializer->read($content)->mustGetCompoundTag());
+			$this->cachedMaps[(int)substr(basename($file, ".dat"), 4)] = Image::load($serializer->read($content)->mustGetCompoundTag());
 		}
 	}
 
@@ -67,7 +67,7 @@ trait DataProviderTrait {
 	public function saveCachedMaps(string $path): void {
 		$serializer = new BigEndianNbtSerializer();
 		foreach ($this->cachedMaps as $id => $map) {
-			if(!file_put_contents($file = "$path/map_$id.dat", $serializer->write(new TreeRoot($map->save())))) {
+			if (!file_put_contents($file = "$path/map_$id.dat", $serializer->write(new TreeRoot($map->save())))) {
 				throw new InvalidStateException("Could not access file $file"); // TODO - Better name
 			}
 		}
@@ -75,7 +75,7 @@ trait DataProviderTrait {
 
 	public function getImageFromFile(string $file, int $chunkCount, int $xOffset, int $yOffset): int {
 		$id = crc32(hash_file("md5", $file) . "$chunkCount:$xOffset:$yOffset");
-		if(!array_key_exists($id, $this->cachedMaps)) {
+		if (!array_key_exists($id, $this->cachedMaps)) {
 			$this->cachedMaps[$id] = ImageLoader::loadImage($file, $chunkCount, $xOffset, $yOffset);
 		}
 

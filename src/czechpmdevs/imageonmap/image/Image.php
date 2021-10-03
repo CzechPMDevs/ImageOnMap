@@ -27,6 +27,7 @@ use pocketmine\color\Color;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\MapImage;
 
 class Image {
 
@@ -38,13 +39,14 @@ class Image {
 	/** @var Color[][] */
 	protected array $colors;
 
-	final protected function __construct() {}
+	final protected function __construct() {
+	}
 
 	/**
 	 * @internal
 	 */
 	public function getPacket(int $id): ClientboundMapItemDataPacket {
-		if(isset($this->packetCache)) {
+		if (isset($this->packetCache)) {
 			return $this->packetCache;
 		}
 
@@ -54,8 +56,7 @@ class Image {
 		$pk->isLocked = false;
 		$pk->scale = 1;
 		$pk->xOffset = $pk->yOffset = 0;
-		$pk->width = $pk->height = 128;
-		$pk->colors = $this->colors;
+		$pk->colors = new MapImage($this->colors);
 
 		return $this->packetCache = $pk;
 	}

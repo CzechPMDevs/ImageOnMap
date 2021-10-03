@@ -23,9 +23,11 @@ declare(strict_types=1);
 namespace czechpmdevs\imageonmap\utils;
 
 use czechpmdevs\imageonmap\image\Image;
+use czechpmdevs\imageonmap\ImageOnMap;
 use InvalidStateException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
+use function file_exists;
 use function imagecolorat;
 use function imagecreatefromjpeg;
 use function imagecreatefrompng;
@@ -33,24 +35,39 @@ use function imagecrop;
 use function imagescale;
 use function pack;
 use function pathinfo;
+use function str_contains;
 use const PATHINFO_EXTENSION;
 
 class ImageLoader {
 
+	public static function findFile(string $imageName): ?string {
+		if (!str_contains($imageName, ".png") && !str_contains($imageName, ".jpg")) {
+			if (file_exists(ImageOnMap::getInstance()->getDataFolder() . "images/$imageName.png")) {
+				$imageName .= ".png";
+			} elseif (file_exists(ImageOnMap::getInstance()->getDataFolder() . "images/$imageName.jpg")) {
+				$imageName .= ".jpg";
+			} else {
+				return null;
+			}
+		}
+
+		return file_exists(ImageOnMap::getInstance()->getDataFolder() . "images/$imageName") ? $imageName : null;
+	}
+
 	public static function loadImage(string $path, int $size = 1, int $xOffset = 0, int $yOffset = 0, bool $locked = false): Image {
 		$suffix = pathinfo($path, PATHINFO_EXTENSION);
-		if($suffix == "png") {
+		if ($suffix == "png") {
 			$image = imagecreatefrompng($path);
 		} else {
 			$image = imagecreatefromjpeg($path);
 		}
 
-		if(!$image) {
+		if (!$image) {
 			throw new InvalidStateException("Could not access target image file $path");
 		}
 
 		$image = imagescale($image, 128 * $size, 128 * $size);
-		if(!$image) {
+		if (!$image) {
 			throw new InvalidStateException("Could not rescale the image");
 		}
 
@@ -60,15 +77,15 @@ class ImageLoader {
 			"width" => 128,
 			"height" => 128
 		]);
-		if(!$image) {
+		if (!$image) {
 			throw new InvalidStateException("Could not crop the image");
 		}
 
 		$colors = [];
-		for($y = 0; $y < 128; ++$y) {
-			for($x = 0; $x < 128; ++$x) {
+		for ($y = 0; $y < 128; ++$y) {
+			for ($x = 0; $x < 128; ++$x) {
 				$color = imagecolorat($image, $x, $y);
-				if($color === false) {
+				if ($color === false) {
 					throw new AssumptionFailedError("Could not read image pixel at $x:$y");
 				}
 

@@ -25,7 +25,6 @@ namespace czechpmdevs\imageonmap;
 use czechpmdevs\imageonmap\command\ImageCommand;
 use czechpmdevs\imageonmap\image\BlankImage;
 use czechpmdevs\imageonmap\item\FilledMap;
-use czechpmdevs\imageonmap\utils\Image;
 use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemFactory;
@@ -64,11 +63,11 @@ class ImageOnMap extends PluginBase implements Listener {
 
 	public function onDataPacketReceive(DataPacketReceiveEvent $event): void {
 		$packet = $event->getPacket();
-		if(!$packet instanceof MapInfoRequestPacket) {
+		if (!$packet instanceof MapInfoRequestPacket) {
 			return;
 		}
 
-		if(!array_key_exists($packet->mapId, $this->cachedMaps)) {
+		if (!array_key_exists($packet->mapId, $this->cachedMaps)) {
 			$event->getOrigin()->sendDataPacket(BlankImage::get()->getPacket($packet->mapId));
 			$this->getLogger()->debug("Unknown map id $packet->mapId received from {$event->getOrigin()->getDisplayName()}");
 			return;
