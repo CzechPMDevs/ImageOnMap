@@ -5,4 +5,7 @@ branches:
 projects:
   ImageOnMap:
     path: ""
+    lint:
+      syntaxError: false
+    
 ...
