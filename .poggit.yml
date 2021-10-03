@@ -7,5 +7,5 @@ projects:
     path: ""
     lint:
       syntaxError: false
-    
+      phpstan: false
 ...
