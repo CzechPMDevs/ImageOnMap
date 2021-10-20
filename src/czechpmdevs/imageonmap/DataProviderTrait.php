@@ -24,7 +24,7 @@ namespace czechpmdevs\imageonmap;
 
 use czechpmdevs\imageonmap\image\Image;
 use czechpmdevs\imageonmap\utils\ImageLoader;
-use InvalidStateException;
+use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\TreeRoot;
 use function array_key_exists;
@@ -46,15 +46,15 @@ trait DataProviderTrait {
 	 */
 	public function loadCachedMaps(string $path): void {
 		$files = glob($path . "/map_*.dat");
-		if (!$files) {
+		if(!$files) {
 			return;
 		}
 
 		$serializer = new BigEndianNbtSerializer();
-		foreach ($files as $file) {
+		foreach($files as $file) {
 			$content = file_get_contents($file);
-			if (!$content) {
-				throw new InvalidStateException("Could not access file $file"); // TODO - Better name
+			if(!$content) {
+				throw new PermissionDeniedException("Could not access file $file");
 			}
 
 			$this->cachedMaps[(int)substr(basename($file, ".dat"), 4)] = Image::load($serializer->read($content)->mustGetCompoundTag());
@@ -66,17 +66,20 @@ trait DataProviderTrait {
 	 */
 	public function saveCachedMaps(string $path): void {
 		$serializer = new BigEndianNbtSerializer();
-		foreach ($this->cachedMaps as $id => $map) {
-			if (!file_put_contents($file = "$path/map_$id.dat", $serializer->write(new TreeRoot($map->save())))) {
-				throw new InvalidStateException("Could not access file $file"); // TODO - Better name
+		foreach($this->cachedMaps as $id => $map) {
+			if(!file_put_contents($file = "$path/map_$id.dat", $serializer->write(new TreeRoot($map->save())))) {
+				throw new PermissionDeniedException("Could not access file $file");
 			}
 		}
 	}
 
-	public function getImageFromFile(string $file, int $chunkCount, int $xOffset, int $yOffset): int {
-		$id = crc32(hash_file("md5", $file) . "$chunkCount:$xOffset:$yOffset");
-		if (!array_key_exists($id, $this->cachedMaps)) {
-			$this->cachedMaps[$id] = ImageLoader::loadImage($file, $chunkCount, $xOffset, $yOffset);
+	/**
+	 * @return int $id Returns id of the image loaded from file.
+	 */
+	public function getImageFromFile(string $file, int $xChunkCount, int $yChunkCount, int $xOffset, int $yOffset): int {
+		$id = crc32(hash_file("md5", $file) . "$xChunkCount:$yChunkCount:$xOffset:$yOffset");
+		if(!array_key_exists($id, $this->cachedMaps)) {
+			$this->cachedMaps[$id] = ImageLoader::loadImage($file, $xChunkCount, $yChunkCount, $xOffset, $yOffset);
 		}
 
 		return $id;

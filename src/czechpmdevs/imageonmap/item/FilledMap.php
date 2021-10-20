@@ -49,7 +49,7 @@ class FilledMap extends Item {
 
 	public static function get(): FilledMap {
 		$item = ItemFactory::getInstance()->get(ItemIds::FILLED_MAP);
-		if (!$item instanceof FilledMap) {
+		if(!$item instanceof FilledMap) {
 			throw new AssumptionFailedError("Item is not registered properly");
 		}
 

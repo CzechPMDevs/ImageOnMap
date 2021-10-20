@@ -46,7 +46,7 @@ class Image {
 	 * @internal
 	 */
 	public function getPacket(int $id): ClientboundMapItemDataPacket {
-		if (isset($this->packetCache)) {
+		if(isset($this->packetCache)) {
 			return $this->packetCache;
 		}
 

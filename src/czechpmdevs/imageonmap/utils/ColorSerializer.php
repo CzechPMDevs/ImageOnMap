@@ -34,16 +34,16 @@ class ColorSerializer {
 	 * @return Color[][]
 	 */
 	public static function readColors(string $bytes): array {
-		if (!($data = unpack("L*", $bytes))) {
+		if(!($data = unpack("L*", $bytes))) {
 			throw new AssumptionFailedError("Could not unpack Map image color data");
 		}
 
 		$colors = [];
 		$i = 0;
-		for ($x = 0; $x < 128; ++$x) {
-			for ($y = 0; $y < 128; ++$y) {
+		for($x = 0; $x < 128; ++$x) {
+			for($y = 0; $y < 128; ++$y) {
 				$color = $data[++$i] ?? null;
-				if ($color === null) {
+				if($color === null) {
 					ImageOnMap::getInstance()->getLogger()->debug("Pixel at $x:$y is null");
 				}
 
@@ -59,8 +59,8 @@ class ColorSerializer {
 	 */
 	public static function writeColors(array $colors): string {
 		$data = [];
-		for ($x = 0; $x < 128; ++$x) {
-			for ($y = 0; $y < 128; ++$y) {
+		for($x = 0; $x < 128; ++$x) {
+			for($y = 0; $y < 128; ++$y) {
 				$data[] = $colors[$x][$y]->toARGB();
 			}
 		}

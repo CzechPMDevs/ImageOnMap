@@ -28,7 +28,8 @@ class ImagePlaceSession implements Listener {
 		private Player $player,
 		private string $imageFile,
 		private ImageOnMap $plugin
-	) {}
+	) {
+	}
 
 	public function run(): void {
 		$this->player->sendMessage("§aBreak first ItemFrame.");
@@ -37,30 +38,30 @@ class ImagePlaceSession implements Listener {
 
 	public function onBreak(BlockBreakEvent $event): void {
 		$player = $event->getPlayer();
-		if ($player->getId() != $this->player->getId()) {
+		if($player->getId() != $this->player->getId()) {
 			$player->sendMessage("{$player->getId()}:{$this->player->getId()}");
 			return;
 		}
 
 		$event->cancel();
 
-		if (!$event->getBlock()->isSameType(VanillaBlocks::ITEM_FRAME())) {
+		if(!$event->getBlock()->isSameType(VanillaBlocks::ITEM_FRAME())) {
 			$player->sendMessage("§6Block you want to place map on must be Item Frame.");
 			return;
 		}
 
-		if (!isset($this->firstPosition)) {
+		if(!isset($this->firstPosition)) {
 			$player->sendMessage("§aFirst position set to {$event->getBlock()->getPosition()->getX()}, {$event->getBlock()->getPosition()->getY()}, {$event->getBlock()->getPosition()->getZ()}. Break second block.");
 			$this->firstPosition = clone $event->getBlock()->getPosition();
 			return;
 		}
 
-		if ($this->firstPosition->getWorld()->getId() != $event->getBlock()->getPosition()->getWorld()->getId()) {
+		if($this->firstPosition->getWorld()->getId() != $event->getBlock()->getPosition()->getWorld()->getId()) {
 			$player->sendMessage("§cSecond positions must be in same world as the first one!");
 			return;
 		}
 
-		if (
+		if(
 			$this->firstPosition->getX() != $event->getBlock()->getPosition()->getX() &&
 			$this->firstPosition->getZ() != $event->getBlock()->getPosition()->getZ()
 		) {
@@ -76,13 +77,13 @@ class ImagePlaceSession implements Listener {
 
 	public function onChat(PlayerChatEvent $event): void {
 		$player = $event->getPlayer();
-		if ($player->getId() != $this->player->getId()) {
+		if($player->getId() != $this->player->getId()) {
 			return;
 		}
 
 		$event->cancel();
 
-		if ($event->getMessage() == "cancel") {
+		if($event->getMessage() == "cancel") {
 			$player->sendMessage("§aImage placing cancelled");
 			$this->close();
 			return;
@@ -92,7 +93,7 @@ class ImagePlaceSession implements Listener {
 	}
 
 	public function onQuit(PlayerQuitEvent $event): void {
-		if ($event->getPlayer()->getId() == $this->player->getId()) {
+		if($event->getPlayer()->getId() == $this->player->getId()) {
 			$this->close();
 		}
 	}
@@ -114,15 +115,15 @@ class ImagePlaceSession implements Listener {
 
 		$world = $this->player->getPosition()->getWorld();
 
-		$getItemFrame = function (int $x, int $y, int $z) use ($world): ItemFrame {
+		$getItemFrame = function(int $x, int $y, int $z) use ($world): ItemFrame {
 			$block = $world->getBlockAt($x, $y, $z, true, false);
-			if ($block instanceof ItemFrame) {
+			if($block instanceof ItemFrame) {
 				return $block;
 			}
 
 			$world->setBlockAt($x, $y, $z, VanillaBlocks::ITEM_FRAME());
 			$block = $world->getBlockAt($x, $y, $z, true, false);
-			if (!$block instanceof ItemFrame) {
+			if(!$block instanceof ItemFrame) {
 				throw new AssumptionFailedError("Block must be item frame");
 			}
 
@@ -136,21 +137,21 @@ class ImagePlaceSession implements Listener {
 		$blocks = [];
 
 		$height = $maxY - $minY;
-		if ($minX == $maxX) {
+		if($minX == $maxX) {
 			$width = $maxZ - $minZ;
 			if($pattern->getFacing() == Facing::NORTH) {
-				for ($x = 0; $x <= $width; ++$x) {
-					for ($y = 0; $y <= $height; ++$y) {
+				for($x = 0; $x <= $width; ++$x) {
+					for($y = 0; $y <= $height; ++$y) {
 						$blocks[] = $getItemFrame($minX, $minY + $y, $minZ + $x)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $x, $height - $y)))
+							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 							->setHasMap(true);
 					}
 				}
 			} else {
-				for ($x = 0; $x <= $width; ++$x) {
-					for ($y = 0; $y <= $height; ++$y) {
+				for($x = 0; $x <= $width; ++$x) {
+					for($y = 0; $y <= $height; ++$y) {
 						$blocks[] = $getItemFrame($minX, $minY + $y, $maxZ - $x)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $x, $height - $y)))
+							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 							->setHasMap(true);
 					}
 				}
@@ -158,25 +159,25 @@ class ImagePlaceSession implements Listener {
 		} else {
 			$width = $maxX - $minX;
 			if($pattern->getFacing() == Facing::SOUTH) {
-				for ($x = 0; $x <= $width; ++$x) {
-					for ($y = 0; $y <= $height; ++$y) {
+				for($x = 0; $x <= $width; ++$x) {
+					for($y = 0; $y <= $height; ++$y) {
 						$blocks[] = $getItemFrame($minX + $x, $minY + $y, $minZ)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $x, $height - $y)))
+							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 							->setHasMap(true);
 					}
 				}
 			} else {
-				for ($x = 0; $x <= $width; ++$x) {
-					for ($y = 0; $y <= $height; ++$y) {
+				for($x = 0; $x <= $width; ++$x) {
+					for($y = 0; $y <= $height; ++$y) {
 						$blocks[] = $getItemFrame($maxX - $x, $minY + $y, $minZ)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $x, $height - $y)))
+							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 							->setHasMap(true);
 					}
 				}
 			}
 		}
 
-		foreach ($blocks as $block) {
+		foreach($blocks as $block) {
 			$world->setBlock($block->getPosition(), $block);
 		}
 

@@ -46,15 +46,15 @@ class BlankImage extends Image {
 	}
 
 	public static function get(): BlankImage {
-		if (isset(self::$blankImage)) {
+		if(isset(self::$blankImage)) {
 			return self::$blankImage;
 		}
 
 		$image = new BlankImage();
 
 		$image->colors = [];
-		for ($x = 0; $x < 128; ++$x) {
-			for ($y = 0; $y < 128; ++$y) {
+		for($x = 0; $x < 128; ++$x) {
+			for($y = 0; $y < 128; ++$y) {
 				$image->colors[$x][$y] = new Color(0, 0, 0, 0);
 			}
 		}

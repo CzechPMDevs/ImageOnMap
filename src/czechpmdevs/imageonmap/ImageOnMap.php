@@ -63,11 +63,11 @@ class ImageOnMap extends PluginBase implements Listener {
 
 	public function onDataPacketReceive(DataPacketReceiveEvent $event): void {
 		$packet = $event->getPacket();
-		if (!$packet instanceof MapInfoRequestPacket) {
+		if(!$packet instanceof MapInfoRequestPacket) {
 			return;
 		}
 
-		if (!array_key_exists($packet->mapId, $this->cachedMaps)) {
+		if(!array_key_exists($packet->mapId, $this->cachedMaps)) {
 			$event->getOrigin()->sendDataPacket(BlankImage::get()->getPacket($packet->mapId));
 			$this->getLogger()->debug("Unknown map id $packet->mapId received from {$event->getOrigin()->getDisplayName()}");
 			return;

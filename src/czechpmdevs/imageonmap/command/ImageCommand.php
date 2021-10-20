@@ -49,38 +49,38 @@ class ImageCommand extends Command implements PluginOwned {
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) {
-		if (!$this->testPermission($sender)) {
+		if(!$this->testPermission($sender)) {
 			return;
 		}
 
-		if (!$sender instanceof Player) {
+		if(!$sender instanceof Player) {
 			$sender->sendMessage("§cThis command can be used only in game.");
 			return;
 		}
 
-		if (!isset($args[0])) {
+		if(!isset($args[0])) {
 			$sender->sendMessage("§cUsage: §7/img help");
 			return;
 		}
 
-		switch (strtolower(array_shift($args))):
+		switch(strtolower(array_shift($args))):
 			case "help":
 				$sender->sendMessage("§2--- §fShowing ImageOnMap Commands page 1 of 1 §2---\n" .
 					"§2/img help §fShows help\n" .
 					"§2/img list §fShows available images\n" .
-					"§2/img obtain <image> [<scale> <x> <y>] §fObtains an image\n" .
+					"§2/img obtain <image> [<xChunkCount> <yChunkCount> <x> <y>] §fObtains an image\n" .
 					"§2/img place <image> §fPlaces an image");
 				break;
 			case "list":
 				$files = [];
 
 				$pngFiles = glob($this->getOwningPlugin()->getDataFolder() . "images/*.png");
-				if ($pngFiles) {
+				if($pngFiles) {
 					array_push($files, ...array_map(fn(string $file) => basename($file, ".png"), $pngFiles));
 				}
 
 				$jpgFiles = glob($this->getOwningPlugin()->getDataFolder() . "images/*.jpg");
-				if ($jpgFiles) {
+				if($jpgFiles) {
 					array_push($files, ...array_map(fn(string $file) => basename($file, ".jpg"), $jpgFiles));
 				}
 
@@ -89,45 +89,48 @@ class ImageCommand extends Command implements PluginOwned {
 				break;
 			case "obtain":
 			case "o":
-				if (count($args) == 0) {
-					$sender->sendMessage("§cUsage: §7/img o <image> [<cropSize> <x> <y>]");
+				if(count($args) == 0) {
+					$sender->sendMessage("§cUsage: §7/img o <image> [<xChunkCount> <yChunkCount> <x> <y>]");
 					break;
 				}
 
 				$imageName = ImageLoader::findFile((string)array_shift($args));
-				if ($imageName === null) {
+				if($imageName === null) {
 					$sender->sendMessage("§cImage $imageName was not found");
 					break;
 				}
 
 				$file = $this->getOwningPlugin()->getDataFolder() . "images/$imageName";
-				if (count($args) >= 3) {
-					foreach ($args as $argument) {
-						if (!is_numeric($argument)) {
+				if(count($args) >= 4) {
+					foreach($args as $argument) {
+						if(!is_numeric($argument)) {
 							$sender->sendMessage("§cOnly numbers could be used to specify crop information");
 							break 2;
 						}
 					}
 
-					$cropSize = (int)array_shift($args);
+					$xChunkCount = (int)array_shift($args);
+					$yChunkCount = (int)array_shift($args);
 					$xOffset = (int)array_shift($args);
 					$yOffset = (int)array_shift($args);
 
-					if ($cropSize < 1) {
+					if($xChunkCount < 1) {
 						$sender->sendMessage("§cCrop size could not be lower than 0");
 						break;
 					}
 
-					if ($xOffset >= $cropSize || $yOffset >= $cropSize) {
-						$sender->sendMessage("§cIt is not possible to create chunk of the image with crop size $cropSize at the position of $xOffset:$yOffset");
+					if($xOffset >= $xChunkCount || $yOffset >= $yChunkCount) {
+						$sender->sendMessage("§cIt is not possible to create chunk of the image in a ration of $xChunkCount:$yChunkCount at the position of $xOffset:$yOffset");
 						break;
 					}
 				} else {
-					$cropSize = 1;
+					$xChunkCount = $yChunkCount = 1;
 					$xOffset = $yOffset = 0;
+
+					$sender->sendMessage("§6Using default values to obtain the image.");
 				}
 
-				$sender->getInventory()->addItem(FilledMap::get()->setMapId(ImageOnMap::getInstance()->getImageFromFile($file, $cropSize, $xOffset, $yOffset)));
+				$sender->getInventory()->addItem(FilledMap::get()->setMapId(ImageOnMap::getInstance()->getImageFromFile($file, $xChunkCount, $yChunkCount, $xOffset, $yOffset)));
 				$sender->sendMessage("§aMap successfully created from the image.");
 				break;
 			case "place":
@@ -135,7 +138,7 @@ class ImageCommand extends Command implements PluginOwned {
 				$sender->sendMessage("§cUsage: §7/img p <image>");
 
 				$imageName = ImageLoader::findFile((string)array_shift($args));
-				if ($imageName === null) {
+				if($imageName === null) {
 					$sender->sendMessage("§cImage $imageName was not found");
 					break;
 				}
