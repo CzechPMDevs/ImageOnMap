@@ -24,7 +24,7 @@ namespace czechpmdevs\imageonmap\utils;
 
 use czechpmdevs\imageonmap\image\Image;
 use czechpmdevs\imageonmap\ImageOnMap;
-use InvalidStateException;
+use InvalidArgumentException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
 use function file_exists;
@@ -63,12 +63,12 @@ class ImageLoader {
 		}
 
 		if(!$image) {
-			throw new InvalidStateException("Could not access target image file $path");
+			throw new PermissionDeniedException("Could not access target image file $path");
 		}
 
 		$image = imagescale($image, 128 * $xChunkCount, 128 * $yChunkCount);
 		if(!$image) {
-			throw new InvalidStateException("Could not rescale the image");
+			throw new InvalidArgumentException("Could not rescale the image");
 		}
 
 		$image = imagecrop($image, [
@@ -78,7 +78,7 @@ class ImageLoader {
 			"height" => 128
 		]);
 		if(!$image) {
-			throw new InvalidStateException("Could not crop the image");
+			throw new InvalidArgumentException("Could not crop the image");
 		}
 
 		$colors = [];

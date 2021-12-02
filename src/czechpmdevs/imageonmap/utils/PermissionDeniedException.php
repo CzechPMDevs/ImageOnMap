@@ -22,6 +22,6 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap\utils;
 
-use InvalidStateException;
+use Exception;
 
-class PermissionDeniedException extends InvalidStateException { }
+class PermissionDeniedException extends Exception { }
