@@ -103,11 +103,12 @@ class ImagePlaceSession implements Listener {
 		$minX = min($this->firstPosition->getX(), $this->secondPosition->getX());
 		/** @var int $maxX */
 		$maxX = max($this->firstPosition->getX(), $this->secondPosition->getX());
+
 		/** @var int $minY */
 		$minY = min($this->firstPosition->getY(), $this->secondPosition->getY());
-
 		/** @var int $maxY */
 		$maxY = max($this->firstPosition->getY(), $this->secondPosition->getY());
+
 		/** @var int $minZ */
 		$minZ = min($this->firstPosition->getZ(), $this->secondPosition->getZ());
 		/** @var int $maxZ */
