@@ -53,7 +53,7 @@ class Image {
 		$pk = new ClientboundMapItemDataPacket();
 		$pk->mapId = $id;
 		$pk->dimensionId = $this->dimension;
-		$pk->isLocked = false;
+		$pk->isLocked = $this->isLocked;
 		$pk->scale = 1;
 		$pk->xOffset = $pk->yOffset = 0;
 		$pk->colors = new MapImage($this->colors);
