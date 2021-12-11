@@ -35,12 +35,12 @@
   <br>
 - There are implemented these subcommands:
 
-| **Sub-Command** | **Description** |
-|---|---|
-| /img help | Shows all the available subcommands |
-| /img list | Displays all the available images found in `/plugin_data/ImageOnMap/images/*` path. |
-| /img obtain `<image>` `[<xChunkCount> <yChunkCount> <x> <y>]` | Obtains specific image (or it's specific part) from file as map item.<br><br>Chunk count argument represents to how many parts should be the image split. X and Y coordinates represents which part of that chunked image will be given to player's inventory.<br><br>Aliases: /img o |
-| /img place `<image>` | Places the whole images on to item frames in selected area.<br><br>To place an image properly, first execute the command (`/img p image`). Afterwards, break the first corner of the target position and then break the block to select second position. The image will be placed automatically.<br><br>Aliases: /img p |
+| **Sub-Command**                                               | **Description**                                                                                                                                                                                                                                                                                                         |
+|---------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| /img help                                                     | Shows all the available subcommands                                                                                                                                                                                                                                                                                     |
+| /img list                                                     | Displays all the available images found in `/plugin_data/ImageOnMap/images/*` path.                                                                                                                                                                                                                                     |
+| /img obtain `<image>` `[<xChunkCount> <yChunkCount> <x> <y>]` | Obtains specific image (or it's specific part) from file as map item.<br><br>Chunk count argument represents to how many parts should be the image split. X and Y coordinates represents which part of that chunked image will be given to player's inventory.<br><br>Aliases: /img o                                   |
+| /img place `<image>`                                          | Places the whole images on to item frames in selected area.<br><br>To place an image properly, first execute the command (`/img p image`). Afterwards, break the first corner of the target position and then break the block to select second position. The image will be placed automatically.<br><br>Aliases: /img p |
 
 ## API
 
