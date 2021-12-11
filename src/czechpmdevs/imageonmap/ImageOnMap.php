@@ -25,6 +25,7 @@ namespace czechpmdevs\imageonmap;
 use czechpmdevs\imageonmap\command\ImageCommand;
 use czechpmdevs\imageonmap\image\BlankImage;
 use czechpmdevs\imageonmap\item\FilledMap;
+use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\ItemFactory;
@@ -50,7 +51,11 @@ class ImageOnMap extends PluginBase implements Listener {
 		@mkdir($this->getDataFolder() . "data");
 		@mkdir($this->getDataFolder() . "images");
 
-		$this->loadCachedMaps($this->getDataFolder() . "data");
+		try {
+			$this->loadCachedMaps($this->getDataFolder() . "data");
+		} catch(PermissionDeniedException) {
+			$this->getLogger()->error("Could not load cached maps - Target file could not be accessed.");
+		}
 
 		$this->getServer()->getCommandMap()->register("imageonmap", new ImageCommand());
 
@@ -58,7 +63,11 @@ class ImageOnMap extends PluginBase implements Listener {
 	}
 
 	protected function onDisable(): void {
-		$this->saveCachedMaps($this->getDataFolder() . "data");
+		try {
+			$this->saveCachedMaps($this->getDataFolder() . "data");
+		} catch(PermissionDeniedException) {
+			$this->getLogger()->error("Could not save cached maps - Target file could not be accessed.");
+		}
 	}
 
 	public function onDataPacketReceive(DataPacketReceiveEvent $event): void {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace czechpmdevs\imageonmap;
 
 use czechpmdevs\imageonmap\item\FilledMap;
+use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\block\Block;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\VanillaBlocks;
@@ -137,52 +138,57 @@ class ImagePlaceSession implements Listener {
 		/** @var Block[] $blocks */
 		$blocks = [];
 
-		$height = $maxY - $minY;
-		if($minX == $maxX) {
-			$width = $maxZ - $minZ;
-			if($pattern->getFacing() == Facing::NORTH) {
-				for($x = 0; $x <= $width; ++$x) {
-					for($y = 0; $y <= $height; ++$y) {
-						$blocks[] = $getItemFrame($minX, $minY + $y, $minZ + $x)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
-							->setHasMap(true);
+		try {
+			$height = $maxY - $minY;
+			if($minX == $maxX) {
+				$width = $maxZ - $minZ;
+				if($pattern->getFacing() == Facing::NORTH) {
+					for($x = 0; $x <= $width; ++$x) {
+						for($y = 0; $y <= $height; ++$y) {
+							$blocks[] = $getItemFrame($minX, $minY + $y, $minZ + $x)
+								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setHasMap(true);
+						}
+					}
+				} else {
+					for($x = 0; $x <= $width; ++$x) {
+						for($y = 0; $y <= $height; ++$y) {
+							$blocks[] = $getItemFrame($minX, $minY + $y, $maxZ - $x)
+								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setHasMap(true);
+						}
 					}
 				}
 			} else {
-				for($x = 0; $x <= $width; ++$x) {
-					for($y = 0; $y <= $height; ++$y) {
-						$blocks[] = $getItemFrame($minX, $minY + $y, $maxZ - $x)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
-							->setHasMap(true);
+				$width = $maxX - $minX;
+				if($pattern->getFacing() == Facing::SOUTH) {
+					for($x = 0; $x <= $width; ++$x) {
+						for($y = 0; $y <= $height; ++$y) {
+							$blocks[] = $getItemFrame($minX + $x, $minY + $y, $minZ)
+								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setHasMap(true);
+						}
+					}
+				} else {
+					for($x = 0; $x <= $width; ++$x) {
+						for($y = 0; $y <= $height; ++$y) {
+							$blocks[] = $getItemFrame($maxX - $x, $minY + $y, $minZ)
+								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setHasMap(true);
+						}
 					}
 				}
 			}
-		} else {
-			$width = $maxX - $minX;
-			if($pattern->getFacing() == Facing::SOUTH) {
-				for($x = 0; $x <= $width; ++$x) {
-					for($y = 0; $y <= $height; ++$y) {
-						$blocks[] = $getItemFrame($minX + $x, $minY + $y, $minZ)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
-							->setHasMap(true);
-					}
-				}
-			} else {
-				for($x = 0; $x <= $width; ++$x) {
-					for($y = 0; $y <= $height; ++$y) {
-						$blocks[] = $getItemFrame($maxX - $x, $minY + $y, $minZ)
-							->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
-							->setHasMap(true);
-					}
-				}
+
+			foreach($blocks as $block) {
+				$world->setBlock($block->getPosition(), $block);
 			}
+
+			$this->player->sendMessage("§aPicture placed!");
+		} catch(PermissionDeniedException) {
+			$this->player->sendMessage("§cCould not access target file");
 		}
 
-		foreach($blocks as $block) {
-			$world->setBlock($block->getPosition(), $block);
-		}
-
-		$this->player->sendMessage("§aPicture placed!");
 		$this->close();
 	}
 

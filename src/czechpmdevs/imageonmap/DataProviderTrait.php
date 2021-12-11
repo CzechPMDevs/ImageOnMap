@@ -63,6 +63,8 @@ trait DataProviderTrait {
 
 	/**
 	 * @internal
+	 *
+	 * @throws PermissionDeniedException When the file could not be accessed
 	 */
 	public function saveCachedMaps(string $path): void {
 		$serializer = new BigEndianNbtSerializer();
@@ -75,6 +77,8 @@ trait DataProviderTrait {
 
 	/**
 	 * @return int $id Returns id of the image loaded from file.
+	 *
+	 * @throws PermissionDeniedException When the file could not be accessed
 	 */
 	public function getImageFromFile(string $file, int $xChunkCount, int $yChunkCount, int $xOffset, int $yOffset): int {
 		$id = crc32(hash_file("md5", $file) . "$xChunkCount:$yChunkCount:$xOffset:$yOffset");
