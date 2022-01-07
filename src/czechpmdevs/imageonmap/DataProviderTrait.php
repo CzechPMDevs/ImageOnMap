@@ -43,6 +43,8 @@ trait DataProviderTrait {
 
 	/**
 	 * @internal
+	 *
+	 * @throws PermissionDeniedException When the file could not be accessed
 	 */
 	public function loadCachedMaps(string $path): void {
 		$files = glob($path . "/map_*.dat");
