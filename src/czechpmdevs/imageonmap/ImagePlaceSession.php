@@ -142,7 +142,7 @@ class ImagePlaceSession implements Listener {
 			$height = $maxY - $minY;
 			if($minX == $maxX) {
 				$width = $maxZ - $minZ;
-				if($pattern->getFacing() == Facing::NORTH) {
+				if($pattern->getFacing() == Facing::WEST) {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($minX, $minY + $y, $minZ + $x)
