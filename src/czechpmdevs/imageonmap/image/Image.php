@@ -67,7 +67,7 @@ class Image {
 	public static function load(CompoundTag $nbt): Image {
 		$mapImage = new Image();
 		$mapImage->dimension = $nbt->getByte("dimension", DimensionIds::OVERWORLD);
-		$mapImage->isLocked = $nbt->getByte("locked", 0) == 1;
+		$mapImage->isLocked = $nbt->getByte("locked", 0) === 1;
 		$mapImage->colors = ColorSerializer::readColors($nbt->getByteArray("colors"));
 
 		return $mapImage;

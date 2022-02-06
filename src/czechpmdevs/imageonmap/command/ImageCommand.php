@@ -89,7 +89,7 @@ class ImageCommand extends Command implements PluginOwned {
 				break;
 			case "obtain":
 			case "o":
-				if(count($args) == 0) {
+				if(count($args) === 0) {
 					$sender->sendMessage("§cUsage: §7/img o <image> [<xChunkCount> <yChunkCount> <x> <y>]");
 					break;
 				}

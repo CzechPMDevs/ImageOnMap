@@ -39,7 +39,7 @@ class ImagePlaceSession implements Listener {
 
 	public function onBreak(BlockBreakEvent $event): void {
 		$player = $event->getPlayer();
-		if($player->getId() != $this->player->getId()) {
+		if($player->getId() !== $this->player->getId()) {
 			$player->sendMessage("{$player->getId()}:{$this->player->getId()}");
 			return;
 		}
@@ -57,14 +57,14 @@ class ImagePlaceSession implements Listener {
 			return;
 		}
 
-		if($this->firstPosition->getWorld()->getId() != $event->getBlock()->getPosition()->getWorld()->getId()) {
+		if($this->firstPosition->getWorld()->getId() !== $event->getBlock()->getPosition()->getWorld()->getId()) {
 			$player->sendMessage("§cSecond positions must be in same world as the first one!");
 			return;
 		}
 
 		if(
-			$this->firstPosition->getX() != $event->getBlock()->getPosition()->getX() &&
-			$this->firstPosition->getZ() != $event->getBlock()->getPosition()->getZ()
+			$this->firstPosition->getX() !== $event->getBlock()->getPosition()->getX() &&
+			$this->firstPosition->getZ() !== $event->getBlock()->getPosition()->getZ()
 		) {
 			$player->sendMessage("§cImage could not be placed that way!");
 			return;
@@ -78,13 +78,13 @@ class ImagePlaceSession implements Listener {
 
 	public function onChat(PlayerChatEvent $event): void {
 		$player = $event->getPlayer();
-		if($player->getId() != $this->player->getId()) {
+		if($player->getId() !== $this->player->getId()) {
 			return;
 		}
 
 		$event->cancel();
 
-		if($event->getMessage() == "cancel") {
+		if($event->getMessage() === "cancel") {
 			$player->sendMessage("§aImage placing cancelled");
 			$this->close();
 			return;
@@ -94,7 +94,7 @@ class ImagePlaceSession implements Listener {
 	}
 
 	public function onQuit(PlayerQuitEvent $event): void {
-		if($event->getPlayer()->getId() == $this->player->getId()) {
+		if($event->getPlayer()->getId() === $this->player->getId()) {
 			$this->close();
 		}
 	}
@@ -140,9 +140,9 @@ class ImagePlaceSession implements Listener {
 
 		try {
 			$height = $maxY - $minY;
-			if($minX == $maxX) {
+			if($minX === $maxX) {
 				$width = $maxZ - $minZ;
-				if($pattern->getFacing() == Facing::WEST) {
+				if($pattern->getFacing() === Facing::WEST) {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($minX, $minY + $y, $minZ + $x)
@@ -161,7 +161,7 @@ class ImagePlaceSession implements Listener {
 				}
 			} else {
 				$width = $maxX - $minX;
-				if($pattern->getFacing() == Facing::SOUTH) {
+				if($pattern->getFacing() === Facing::SOUTH) {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($minX + $x, $minY + $y, $minZ)
