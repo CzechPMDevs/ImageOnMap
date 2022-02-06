@@ -117,13 +117,30 @@ class ImagePlaceSession implements Listener {
 
 		$world = $this->player->getPosition()->getWorld();
 
-		$getItemFrame = function(int $x, int $y, int $z) use ($world): ItemFrame {
+		$itemFrame = VanillaBlocks::ITEM_FRAME();
+		if($minX === $maxX) {
+			// West x East
+			if($world->getBlock($this->firstPosition->add(1, 0, 0), true, false)->isSolid()) {
+				$itemFrame->setFacing(Facing::WEST);
+			} else {
+				$itemFrame->setFacing(Facing::EAST);
+			}
+		} else {
+			// North x South
+			if($world->getBlock($this->firstPosition->add(0, 0, 1), true, false)->isSolid()) {
+				$itemFrame->setFacing(Facing::NORTH);
+			} else {
+				$itemFrame->setFacing(Facing::SOUTH);
+			}
+		}
+
+		$getItemFrame = function(int $x, int $y, int $z) use ($itemFrame, $world): ItemFrame {
 			$block = $world->getBlockAt($x, $y, $z, true, false);
 			if($block instanceof ItemFrame) {
 				return $block;
 			}
 
-			$world->setBlockAt($x, $y, $z, VanillaBlocks::ITEM_FRAME());
+			$world->setBlockAt($x, $y, $z, $itemFrame);
 			$block = $world->getBlockAt($x, $y, $z, true, false);
 			if(!$block instanceof ItemFrame) {
 				throw new AssumptionFailedError("Block must be item frame");
