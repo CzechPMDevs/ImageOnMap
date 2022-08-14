@@ -59,7 +59,7 @@ class Image {
 		$pk->isLocked = $this->isLocked;
 		$pk->scale = 1;
 		$pk->xOffset = $pk->yOffset = 0;
-        $pk->origin = new BlockPosition(0, 0, 0);
+                $pk->origin = new BlockPosition(0, 0, 0);
 		$pk->colors = new MapImage($this->colors);
 
 		return $this->packetCache = $pk;
