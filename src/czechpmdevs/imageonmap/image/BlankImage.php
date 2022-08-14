@@ -24,15 +24,18 @@ namespace czechpmdevs\imageonmap\image;
 
 use pocketmine\color\Color;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\MapImage;
 
 class BlankImage extends Image {
 
 	private static BlankImage $blankImage;
 
-	/**
-	 * @internal
-	 */
+    /**
+     * @param int $id
+     * @return ClientboundMapItemDataPacket
+     * @internal
+     */
 	public function getPacket(int $id): ClientboundMapItemDataPacket {
 		$pk = new ClientboundMapItemDataPacket();
 		$pk->mapId = $id;
@@ -40,6 +43,7 @@ class BlankImage extends Image {
 		$pk->isLocked = false;
 		$pk->scale = 1;
 		$pk->xOffset = $pk->yOffset = 0;
+		$pk->origin = new BlockPosition(0, 0, 0);
 		$pk->colors = new MapImage($this->colors);
 
 		return $pk;

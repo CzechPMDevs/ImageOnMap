@@ -54,9 +54,16 @@ class ImageLoader {
 		return file_exists(ImageOnMap::getInstance()->getDataFolder() . "images/$imageName") ? $imageName : null;
 	}
 
-	/**
-	 * @throws PermissionDeniedException If the file could not be accepted
-	 */
+    /**
+     * @param string $path
+     * @param int $xChunkCount
+     * @param int $yChunkCount
+     * @param int $xOffset
+     * @param int $yOffset
+     * @param bool $locked
+     * @return Image
+     * @throws PermissionDeniedException If the file could not be accepted
+     */
 	public static function loadImage(string $path, int $xChunkCount = 1, int $yChunkCount = 1, int $xOffset = 0, int $yOffset = 0, bool $locked = false): Image {
 		$suffix = pathinfo($path, PATHINFO_EXTENSION);
 		if($suffix === "png") {

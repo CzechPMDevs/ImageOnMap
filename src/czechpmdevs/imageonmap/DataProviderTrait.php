@@ -41,11 +41,12 @@ trait DataProviderTrait {
 	/** @var array<int, Image> */
 	private array $cachedMaps = [];
 
-	/**
-	 * @internal
-	 *
-	 * @throws PermissionDeniedException When the file could not be accessed
-	 */
+    /**
+     * @param string $path
+     * @throws PermissionDeniedException When the file could not be accessed
+     * @internal
+     *
+     */
 	public function loadCachedMaps(string $path): void {
 		$files = glob($path . "/map_*.dat");
 		if(!$files) {
@@ -63,11 +64,12 @@ trait DataProviderTrait {
 		}
 	}
 
-	/**
-	 * @internal
-	 *
-	 * @throws PermissionDeniedException When the file could not be accessed
-	 */
+    /**
+     * @param string $path
+     * @throws PermissionDeniedException When the file could not be accessed
+     * @internal
+     *
+     */
 	public function saveCachedMaps(string $path): void {
 		$serializer = new BigEndianNbtSerializer();
 		foreach($this->cachedMaps as $id => $map) {
@@ -77,11 +79,16 @@ trait DataProviderTrait {
 		}
 	}
 
-	/**
-	 * @return int $id Returns id of the image loaded from file.
-	 *
-	 * @throws PermissionDeniedException When the file could not be accessed
-	 */
+    /**
+     * @param string $file
+     * @param int $xChunkCount
+     * @param int $yChunkCount
+     * @param int $xOffset
+     * @param int $yOffset
+     * @return int $id Returns id of the image loaded from file.
+     *
+     * @throws PermissionDeniedException When the file could not be accessed
+     */
 	public function getImageFromFile(string $file, int $xChunkCount, int $yChunkCount, int $xOffset, int $yOffset): int {
 		$id = crc32(hash_file("md5", $file) . "$xChunkCount:$yChunkCount:$xOffset:$yOffset");
 		if(!array_key_exists($id, $this->cachedMaps)) {
@@ -91,9 +98,11 @@ trait DataProviderTrait {
 		return $id;
 	}
 
-	/**
-	 * @internal
-	 */
+    /**
+     * @param int $id
+     * @return Image
+     * @internal
+     */
 	public function getCachedMap(int $id): Image {
 		return $this->cachedMaps[$id];
 	}

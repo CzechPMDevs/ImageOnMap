@@ -30,9 +30,10 @@ use function unpack;
 
 class ColorSerializer {
 
-	/**
-	 * @return Color[][]
-	 */
+    /**
+     * @param string $bytes
+     * @return Color[][]
+     */
 	public static function readColors(string $bytes): array {
 		if(!($data = unpack("L*", $bytes))) {
 			throw new AssumptionFailedError("Could not unpack Map image color data");
@@ -54,9 +55,10 @@ class ColorSerializer {
 		return $colors;
 	}
 
-	/**
-	 * @param Color[][] $colors
-	 */
+    /**
+     * @param Color[][] $colors
+     * @return string
+     */
 	public static function writeColors(array $colors): string {
 		$data = [];
 		for($x = 0; $x < 128; ++$x) {

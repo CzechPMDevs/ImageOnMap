@@ -26,6 +26,7 @@ use czechpmdevs\imageonmap\utils\ColorSerializer;
 use pocketmine\color\Color;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapImage;
 
@@ -42,9 +43,11 @@ class Image {
 	final protected function __construct() {
 	}
 
-	/**
-	 * @internal
-	 */
+    /**
+     * @param int $id
+     * @return ClientboundMapItemDataPacket
+     * @internal
+     */
 	public function getPacket(int $id): ClientboundMapItemDataPacket {
 		if(isset($this->packetCache)) {
 			return $this->packetCache;
@@ -56,14 +59,17 @@ class Image {
 		$pk->isLocked = $this->isLocked;
 		$pk->scale = 1;
 		$pk->xOffset = $pk->yOffset = 0;
+        $pk->origin = new BlockPosition(0, 0, 0);
 		$pk->colors = new MapImage($this->colors);
 
 		return $this->packetCache = $pk;
 	}
 
-	/**
-	 * @internal
-	 */
+    /**
+     * @param CompoundTag $nbt
+     * @return Image
+     * @internal
+     */
 	public static function load(CompoundTag $nbt): Image {
 		$mapImage = new Image();
 		$mapImage->dimension = $nbt->getByte("dimension", DimensionIds::OVERWORLD);
