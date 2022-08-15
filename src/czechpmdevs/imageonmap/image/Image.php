@@ -26,6 +26,7 @@ use czechpmdevs\imageonmap\utils\ColorSerializer;
 use pocketmine\color\Color;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapImage;
 
@@ -57,6 +58,7 @@ class Image {
 		$pk->scale = 1;
 		$pk->xOffset = $pk->yOffset = 0;
 		$pk->colors = new MapImage($this->colors);
+		$pk->origin = new BlockPosition(0,0, 0);
 
 		return $this->packetCache = $pk;
 	}
