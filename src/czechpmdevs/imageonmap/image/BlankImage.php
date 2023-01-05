@@ -43,7 +43,7 @@ class BlankImage extends Image {
 		$pk->xOffset = $pk->yOffset = 0;
 		$pk->colors = new MapImage($this->colors);
 		$pk->origin = new BlockPosition(0, 0, 0);
-		$pk->parentMapIds = [$id];
+		$pk->parentMapIds[] = $id;
 
 		return $pk;
 	}
