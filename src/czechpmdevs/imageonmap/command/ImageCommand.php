@@ -2,7 +2,7 @@
 
 /**
  * ImageOnMap - Easy to use PocketMine plugin, which allows loading images on maps
- * Copyright (C) 2021 - 2022 CzechPMDevs
+ * Copyright (C) 2021 - 2023 CzechPMDevs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,12 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap\command;
 
+use czechpmdevs\imageonmap\FilledMapItemRegistry;
 use czechpmdevs\imageonmap\ImageOnMap;
 use czechpmdevs\imageonmap\ImagePlaceSession;
 use czechpmdevs\imageonmap\item\FilledMap;
 use czechpmdevs\imageonmap\utils\ImageLoader;
+use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -42,13 +44,12 @@ use function is_numeric;
 use function strtolower;
 
 class ImageCommand extends Command implements PluginOwned {
-
 	public function __construct() {
 		parent::__construct("image", "Image on map commands", null, ["iom", "img"]);
 		$this->setPermission("imageonmap.command");
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args) {
+	public function execute(CommandSender $sender, string $commandLabel, array $args): void {
 		if(!$this->testPermission($sender)) {
 			return;
 		}
@@ -130,8 +131,12 @@ class ImageCommand extends Command implements PluginOwned {
 					$sender->sendMessage("§6Using default values to obtain the image.");
 				}
 
-				$sender->getInventory()->addItem(FilledMap::get()->setMapId(ImageOnMap::getInstance()->getImageFromFile($file, $xChunkCount, $yChunkCount, $xOffset, $yOffset)));
-				$sender->sendMessage("§aMap successfully created from the image.");
+				try {
+					$sender->getInventory()->addItem(FilledMapItemRegistry::FILLED_MAP()->setMapId(ImageOnMap::getInstance()->getImageFromFile($file, $xChunkCount, $yChunkCount, $xOffset, $yOffset)));
+					$sender->sendMessage("§aMap successfully created from the image.");
+				} catch(PermissionDeniedException) {
+					$sender->sendMessage("§cPlugin does not have permissions to access map file");
+				}
 				break;
 			case "place":
 			case "p":
@@ -146,6 +151,9 @@ class ImageCommand extends Command implements PluginOwned {
 				$file = $this->getOwningPlugin()->getDataFolder() . "images/$imageName";
 
 				(new ImagePlaceSession($sender, $file, ImageOnMap::getInstance()))->run();
+				break;
+			default:
+				$sender->sendMessage("§cUsage: §7/img help");
 				break;
 		endswitch;
 	}

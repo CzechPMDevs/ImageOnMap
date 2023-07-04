@@ -2,7 +2,7 @@
 
 /**
  * ImageOnMap - Easy to use PocketMine plugin, which allows loading images on maps
- * Copyright (C) 2021 - 2022 CzechPMDevs
+ * Copyright (C) 2021 - 2023 CzechPMDevs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,11 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap\item;
 
+use czechpmdevs\imageonmap\FilledMapItemRegistry;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\utils\AssumptionFailedError;
 
 class FilledMap extends Item {
-
 	private int $uuid;
 
 	public function setMapId(int $uuid): self {
@@ -47,12 +44,11 @@ class FilledMap extends Item {
 		$this->uuid = $tag->getLong("map_uuid");
 	}
 
+	/**
+	 * @deprecated
+	 * @see FilledMapItemRegistry::FILLED_MAP()
+	 */
 	public static function get(): FilledMap {
-		$item = ItemFactory::getInstance()->get(ItemIds::FILLED_MAP);
-		if(!$item instanceof FilledMap) {
-			throw new AssumptionFailedError("Item is not registered properly");
-		}
-
-		return $item;
+		return FilledMapItemRegistry::FILLED_MAP();
 	}
 }

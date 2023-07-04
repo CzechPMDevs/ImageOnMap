@@ -2,7 +2,7 @@
 
 /**
  * ImageOnMap - Easy to use PocketMine plugin, which allows loading images on maps
- * Copyright (C) 2021 - 2022 CzechPMDevs
+ * Copyright (C) 2021 - 2023 CzechPMDevs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,15 +24,16 @@ namespace czechpmdevs\imageonmap;
 
 use czechpmdevs\imageonmap\command\ImageCommand;
 use czechpmdevs\imageonmap\image\BlankImage;
-use czechpmdevs\imageonmap\item\FilledMap;
 use czechpmdevs\imageonmap\utils\PermissionDeniedException;
+use pocketmine\data\bedrock\item\ItemTypeNames;
+use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIdentifier;
-use pocketmine\item\ItemIds;
+use pocketmine\item\StringToItemParser;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\plugin\PluginBase;
+use pocketmine\scheduler\AsyncTask;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function array_key_exists;
 use function mkdir;
 
@@ -59,7 +60,14 @@ class ImageOnMap extends PluginBase implements Listener {
 
 		$this->getServer()->getCommandMap()->register("imageonmap", new ImageCommand());
 
-		ItemFactory::getInstance()->register(new FilledMap(new ItemIdentifier(ItemIds::FILLED_MAP, 0)));
+		$this->registerItem();
+		$this->getServer()->getAsyncPool()->addWorkerStartHook(function(int $worker): void {
+			$this->getServer()->getAsyncPool()->submitTaskToWorker(new class extends AsyncTask {
+				public function onRun(): void {
+					ImageOnMap::registerItem();
+				}
+			}, $worker);
+		});
 	}
 
 	protected function onDisable(): void {
@@ -68,6 +76,20 @@ class ImageOnMap extends PluginBase implements Listener {
 		} catch(PermissionDeniedException) {
 			$this->getLogger()->error("Could not save cached maps - Target file could not be accessed.");
 		}
+	}
+
+	/**
+	 * @internal
+	 *
+	 * @deprecated Internal
+	 */
+	public static function registerItem(): void {
+		$item = FilledMapItemRegistry::FILLED_MAP();
+
+		GlobalItemDataHandlers::getDeserializer()->map(ItemTypeNames::FILLED_MAP, fn() => clone $item);
+		GlobalItemDataHandlers::getSerializer()->map($item, fn() => new SavedItemData(ItemTypeNames::FILLED_MAP));
+
+		StringToItemParser::getInstance()->register("filled_map", fn() => clone $item);
 	}
 
 	public function onDataPacketReceive(DataPacketReceiveEvent $event): void {

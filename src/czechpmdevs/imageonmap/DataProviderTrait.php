@@ -2,7 +2,7 @@
 
 /**
  * ImageOnMap - Easy to use PocketMine plugin, which allows loading images on maps
- * Copyright (C) 2021 - 2022 CzechPMDevs
+ * Copyright (C) 2021 - 2023 CzechPMDevs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ use function hash_file;
 use function substr;
 
 trait DataProviderTrait {
-
 	/** @var array<int, Image> */
 	private array $cachedMaps = [];
 

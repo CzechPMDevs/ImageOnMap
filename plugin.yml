@@ -1,6 +1,6 @@
 name: ImageOnMap
-api: 4.0.0
-version: 1.0.4
+api: 5.0.0
+version: 1.1.0
 main: czechpmdevs\imageonmap\ImageOnMap
 description: PocketMine plugin which allows to add images to map items
 author: CzechPMDevs

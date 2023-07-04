@@ -2,7 +2,7 @@
 
 /**
  * ImageOnMap - Easy to use PocketMine plugin, which allows loading images on maps
- * Copyright (C) 2021 - 2022 CzechPMDevs
+ * Copyright (C) 2021 - 2023 CzechPMDevs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ use function str_contains;
 use const PATHINFO_EXTENSION;
 
 class ImageLoader {
-
 	public static function findFile(string $imageName): ?string {
 		if(!str_contains($imageName, ".png") && !str_contains($imageName, ".jpg")) {
 			if(file_exists(ImageOnMap::getInstance()->getDataFolder() . "images/$imageName.png")) {
@@ -55,7 +54,7 @@ class ImageLoader {
 	}
 
 	/**
-	 * @throws PermissionDeniedException If the file could not be accepted
+	 * @throws PermissionDeniedException If the file could not be accessed
 	 */
 	public static function loadImage(string $path, int $xChunkCount = 1, int $yChunkCount = 1, int $xOffset = 0, int $yOffset = 0, bool $locked = false): Image {
 		$suffix = pathinfo($path, PATHINFO_EXTENSION);

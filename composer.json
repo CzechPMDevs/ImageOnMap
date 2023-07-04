@@ -6,9 +6,8 @@
   "require": {
     "php": "^8.0",
     "ext-yaml": "*",
-    "ext-pthreads": "*",
     "ext-json": "*",
-    "pocketmine/pocketmine-mp": "^4.7.1",
+    "pocketmine/pocketmine-mp": "^5.0.0",
     "ext-gd": "*"
   },
   "require-dev": {

@@ -2,7 +2,7 @@
 
 /**
  * ImageOnMap - Easy to use PocketMine plugin, which allows loading images on maps
- * Copyright (C) 2021 - 2022 CzechPMDevs
+ * Copyright (C) 2021 - 2023 CzechPMDevs
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap;
 
-use czechpmdevs\imageonmap\item\FilledMap;
 use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\block\Block;
 use pocketmine\block\ItemFrame;
@@ -64,7 +63,7 @@ class ImagePlaceSession implements Listener {
 
 		$event->cancel();
 
-		if(!$event->getBlock()->isSameType(VanillaBlocks::ITEM_FRAME())) {
+		if(!$event->getBlock()->hasSameTypeId(VanillaBlocks::ITEM_FRAME())) {
 			$player->sendMessage("§6Block you want to place map on must be Item Frame.");
 			return;
 		}
@@ -181,7 +180,7 @@ class ImagePlaceSession implements Listener {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($minX, $minY + $y, $minZ + $x)
-								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setFramedItem(FilledMapItemRegistry::FILLED_MAP()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 								->setHasMap(true);
 						}
 					}
@@ -189,7 +188,7 @@ class ImagePlaceSession implements Listener {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($minX, $minY + $y, $maxZ - $x)
-								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setFramedItem(FilledMapItemRegistry::FILLED_MAP()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 								->setHasMap(true);
 						}
 					}
@@ -200,7 +199,7 @@ class ImagePlaceSession implements Listener {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($minX + $x, $minY + $y, $minZ)
-								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setFramedItem(FilledMapItemRegistry::FILLED_MAP()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 								->setHasMap(true);
 						}
 					}
@@ -208,7 +207,7 @@ class ImagePlaceSession implements Listener {
 					for($x = 0; $x <= $width; ++$x) {
 						for($y = 0; $y <= $height; ++$y) {
 							$blocks[] = $getItemFrame($maxX - $x, $minY + $y, $minZ)
-								->setFramedItem(FilledMap::get()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
+								->setFramedItem(FilledMapItemRegistry::FILLED_MAP()->setMapId($this->plugin->getImageFromFile($this->imageFile, $width + 1, $height + 1, $x, $height - $y)))
 								->setHasMap(true);
 						}
 					}
