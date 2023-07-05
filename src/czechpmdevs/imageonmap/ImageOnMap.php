@@ -31,10 +31,12 @@ use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\StringToItemParser;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
+use pocketmine\plugin\DisablePluginException;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function array_key_exists;
+use function extension_loaded;
 use function mkdir;
 
 class ImageOnMap extends PluginBase implements Listener {
@@ -42,11 +44,13 @@ class ImageOnMap extends PluginBase implements Listener {
 
 	private static ImageOnMap $instance;
 
-	protected function onLoad(): void {
-		self::$instance = $this;
-	}
-
 	public function onEnable(): void {
+		self::$instance = $this;
+
+		if(!extension_loaded("gd")) {
+			throw new DisablePluginException("GD extension is required in order to run ImageOnMap plugin.");
+		}
+
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 
 		@mkdir($this->getDataFolder() . "data");
