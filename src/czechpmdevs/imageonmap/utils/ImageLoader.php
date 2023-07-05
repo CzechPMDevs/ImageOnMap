@@ -24,6 +24,7 @@ namespace czechpmdevs\imageonmap\utils;
 
 use czechpmdevs\imageonmap\image\Image;
 use czechpmdevs\imageonmap\ImageOnMap;
+use ErrorException;
 use InvalidArgumentException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
@@ -55,13 +56,23 @@ class ImageLoader {
 
 	/**
 	 * @throws PermissionDeniedException If the file could not be accessed
+	 * @throws ImageLoadException If any other error occurs whilst loading an image
 	 */
 	public static function loadImage(string $path, int $xChunkCount = 1, int $yChunkCount = 1, int $xOffset = 0, int $yOffset = 0, bool $locked = false): Image {
 		$suffix = pathinfo($path, PATHINFO_EXTENSION);
-		if($suffix === "png") {
-			$image = imagecreatefrompng($path);
-		} else {
-			$image = imagecreatefromjpeg($path);
+		try {
+			if($suffix === "png") {
+				$image = imagecreatefrompng($path);
+			} else {
+				$image = imagecreatefromjpeg($path);
+			}
+		}
+
+		// Truly ErrorException could be thrown, even though it is not in php docs.
+		// To reproduce this ErrorException to be thrown, try loading jpg image
+		// with 'imagecreatefrompng' function.
+		catch(ErrorException $e) {
+			throw new ImageLoadException($e->getMessage(), $e->getCode(), $e);
 		}
 
 		if(!$image) {

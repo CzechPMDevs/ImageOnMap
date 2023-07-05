@@ -24,4 +24,4 @@ namespace czechpmdevs\imageonmap\utils;
 
 use RuntimeException;
 
-class PermissionDeniedException extends RuntimeException {}
+class ImageLoadException extends RuntimeException {}

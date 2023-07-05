@@ -27,6 +27,7 @@ use czechpmdevs\imageonmap\ImageOnMap;
 use czechpmdevs\imageonmap\ImagePlaceSession;
 use czechpmdevs\imageonmap\item\FilledMap;
 use czechpmdevs\imageonmap\utils\ImageLoader;
+use czechpmdevs\imageonmap\utils\ImageLoadException;
 use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -136,6 +137,8 @@ class ImageCommand extends Command implements PluginOwned {
 					$sender->sendMessage("§aMap successfully created from the image.");
 				} catch(PermissionDeniedException) {
 					$sender->sendMessage("§cPlugin does not have permissions to access map file");
+				} catch(ImageLoadException $e) {
+					$sender->sendMessage("§cCould not load image: {$e->getMessage()}");
 				}
 				break;
 			case "place":

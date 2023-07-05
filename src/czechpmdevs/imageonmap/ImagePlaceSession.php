@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace czechpmdevs\imageonmap;
 
+use czechpmdevs\imageonmap\utils\ImageLoadException;
 use czechpmdevs\imageonmap\utils\PermissionDeniedException;
 use pocketmine\block\Block;
 use pocketmine\block\ItemFrame;
@@ -221,6 +222,8 @@ class ImagePlaceSession implements Listener {
 			$this->player->sendMessage("§aPicture placed!");
 		} catch(PermissionDeniedException) {
 			$this->player->sendMessage("§cCould not access target file");
+		} catch(ImageLoadException $e) {
+			$this->player->sendMessage("§cCould not load image: {$e->getMessage()}");
 		}
 
 		$this->close();
