@@ -35,6 +35,7 @@ use pocketmine\plugin\DisablePluginException;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
+use pocketmine\event\server\DataPacketDecodeEvent;
 use function array_key_exists;
 use function extension_loaded;
 use function mkdir;
@@ -109,6 +110,15 @@ class ImageOnMap extends PluginBase implements Listener {
 		}
 
 		$event->getOrigin()->sendDataPacket($this->getCachedMap($packet->mapId)->getPacket($packet->mapId));
+	}
+
+	/**
+ 	* @handleCancelled
+ 	*/
+	public function onDataPacketDecode(DataPacketDecodeEvent $event) : void{
+    	if($event->getPacketId() === MapInfoRequestPacket::NETWORK_ID){
+        $event->uncancel();
+    	}
 	}
 
 	/**
